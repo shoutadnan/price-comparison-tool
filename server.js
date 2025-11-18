@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
-const enableMongo = false;
+const enableMongo = true;
 if (enableMongo && process.env.MONGO_URL) {
   mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("MongoDB Connected"))
@@ -121,6 +121,13 @@ async function firstText(page, selectors) {
     if (value) return value;
   }
   return null;
+}
+
+async function waitForDelay(page, ms) {
+  if (typeof page.waitForTimeout === "function") {
+    return page.waitForTimeout(ms);
+  }
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function resolveChromiumExecutable() {
@@ -262,7 +269,7 @@ async function fetchAmazon(browser, query) {
       });
       await page.goto(listingLink, { waitUntil: "domcontentloaded", timeout: 15000 });
 
-      await page.waitForTimeout(1000);
+      await waitForDelay(page, 1000);
       const title = await page.$eval("#productTitle", el => el.innerText).catch(()=>null);
       const displayPrice = await page.$eval("#priceblock_ourprice", el => el.innerText).catch(()=>null) ||
                            await page.$eval("#priceblock_dealprice", el => el.innerText).catch(()=>null) ||
@@ -485,7 +492,7 @@ async function fetchFlipkart(browser, query) {
       }
 
       await page.waitForSelector(FLIPKART_PRICE_SELECTOR_STRING, { timeout: 8000 }).catch(()=>null);
-      await page.waitForTimeout(800);
+      await waitForDelay(page, 800);
 
     const title = await firstText(page, FLIPKART_PRODUCT_TITLE_SELECTORS);
     let displayPrice = await firstText(page, FLIPKART_PRIMARY_PRICE_SELECTORS);
@@ -647,7 +654,7 @@ async function fetchCroma(browser, query) {
         "span.price, .product-info-price .special-price .price, .new-price, .cp-price",
         { timeout: 12000 }
       ).catch(()=>null);
-      await page.waitForTimeout(800);
+      await waitForDelay(page, 800);
 
       const title = await page.$eval("h1.page-title span", el => el.innerText).catch(()=>null) ||
                     await page.$eval("h1.product-name", el => el.innerText).catch(()=>null);
