@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Price Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Price Finder</h1>
+    <p class="tagline">Find the best price before you hit buy.</p>
+
+    <div class="search-box">
+        <input type="text" id="productInput" placeholder="Enter product name">
+        <button id="searchButton" type="button" onclick="searchPrice()">Search</button>
+    </div>
+
+    <div id="status" class="status hidden">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="statusMessage">Ready when you are.</p>
+    </div>
+
+    <div id="result"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
